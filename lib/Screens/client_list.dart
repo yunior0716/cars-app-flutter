@@ -29,7 +29,7 @@ class _ClientListScreenState extends State<ClientListScreen> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue[200],
-          title: const Text('Client List'),
+          title: const Text('Customer List'),
           centerTitle: true,
           actions: [
             IconButton(
@@ -149,7 +149,7 @@ class _ClientListScreenState extends State<ClientListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.blue,
         onPressed: navigateToClientRegister,
-        label: const Text('Add Client'),
+        label: const Text('Add Customer'),
       ),
     );
   }

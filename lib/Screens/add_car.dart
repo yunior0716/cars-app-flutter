@@ -47,7 +47,7 @@ class _AddCarScreenState extends State<AddCarScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[200],
-        title: Text(isEdit ? 'Edit Todo' : 'Add Car'),
+        title: Text(isEdit ? 'Edit Car' : 'Add Car'),
         centerTitle: true,
       ),
       body: ListView(children: [

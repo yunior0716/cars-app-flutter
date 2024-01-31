@@ -45,7 +45,7 @@ class _AddClientScreenState extends State<AddClientScreen> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[200],
-        title: Text(isEdit ? 'Edit Todo' : 'Add Client'),
+        title: Text(isEdit ? 'Edit Customer' : 'Add Customer'),
         centerTitle: true,
       ),
       body: ListView(children: [
@@ -92,7 +92,7 @@ class _AddClientScreenState extends State<AddClientScreen> {
               )
             : CustomButton(
                 height: 50,
-                text: isEdit ? "Update Client" : "Add Client",
+                text: isEdit ? "Update Customer" : "Add Customer",
                 onPressed: () {
                   isEdit ? editClient() : addClient();
                 },

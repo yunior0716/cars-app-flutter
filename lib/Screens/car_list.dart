@@ -66,7 +66,7 @@ class _CarListScreenState extends State<CarListScreen> {
               ),
               child: ListTile(
                 title: const Center(
-                    child: Text('Clients', style: TextStyle(fontSize: 18))),
+                    child: Text('Customers', style: TextStyle(fontSize: 18))),
                 onTap: () {
                   Navigator.pop(context);
 
