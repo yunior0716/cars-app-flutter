@@ -2,6 +2,7 @@ import 'package:first_app/Models/User.dart';
 import 'package:first_app/Models/auth.dart';
 import 'package:first_app/Services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UserViewModel extends ChangeNotifier {
   final apiService = ApiService();
@@ -19,20 +20,19 @@ class UserViewModel extends ChangeNotifier {
     TextEditingController emailController,
     TextEditingController passwordController,
     TextEditingController confirmPasswordController,
-    void Function(String) showSuccesMessage,
-    void Function(String) showErrorMessage,
+    dynamic context,
   ) async {
     if (nameController.text.isEmpty ||
         emailController.text.isEmpty ||
         passwordController.text.isEmpty ||
         confirmPasswordController.text.isEmpty) {
-      showErrorMessage('Please fill in all fields');
+      await showErrorMessage('Please fill in all fields', context);
       return;
     }
 
     if (!validatePassword(
         passwordController.text, confirmPasswordController.text)) {
-      showErrorMessage('Password dont match');
+      await showErrorMessage('Password dont match', context);
       return;
     }
 
@@ -52,24 +52,25 @@ class UserViewModel extends ChangeNotifier {
         passwordController.text = '';
         confirmPasswordController.text = '';
 
-        showSuccesMessage('User added successfully');
+        await showSuccesMessage('User added successfully', context);
       } else {
-        showErrorMessage('Unable to add user');
+        await showErrorMessage('Unable to add user', context);
+        return;
       }
     } catch (e) {
-      showErrorMessage('Failed to connect to server');
+      await showErrorMessage('Failed to connect to server', context);
+      return;
     }
   }
 
   Future<void> loginUser(
     TextEditingController emailController,
     TextEditingController passwordController,
-    void Function(String) showSuccesMessage,
-    void Function(String) showErrorMessage,
+    dynamic context,
     void Function() navigate,
   ) async {
     if (emailController.text.isEmpty || passwordController.text.isEmpty) {
-      showErrorMessage('Please fill in all fields');
+      await showErrorMessage('Please fill in all fields', context);
       return;
     }
     final user = Auth(
@@ -85,13 +86,41 @@ class UserViewModel extends ChangeNotifier {
         emailController.text = '';
         passwordController.text = '';
 
-        showSuccesMessage('Signin successfully');
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+
+        // await showSuccesMessage('Signin successfully', context);
         navigate();
       } else {
-        showErrorMessage('Email or password incorrect');
+        await showErrorMessage('Email or password incorrect', context);
+        return;
       }
     } catch (e) {
-      showErrorMessage('Failed to connect to server');
+      await showErrorMessage('Failed to connect to server', context);
+      return;
     }
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
+  }
+
+  showSuccesMessage(String message, dynamic context) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.blue[300],
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  showErrorMessage(String message, dynamic context) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red[300],
+      duration: const Duration(seconds: 2),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

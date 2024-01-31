@@ -81,27 +81,11 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> postUser() async {
     final userViewModel = Provider.of<UserViewModel>(context, listen: false);
     userViewModel.registerUser(
-        nameController,
-        emailController,
-        passwordController,
-        confirmPasswordController,
-        showSuccesMessage,
-        showErrorMessage);
-  }
-
-  void showSuccesMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.blue[300],
+      nameController,
+      emailController,
+      passwordController,
+      confirmPasswordController,
+      context,
     );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void showErrorMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red[300],
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

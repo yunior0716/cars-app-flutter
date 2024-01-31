@@ -125,15 +125,8 @@ class _AddCarScreenState extends State<AddCarScreen> {
     });
 
     final carViewModel = Provider.of<CarViewModel>(context, listen: false);
-    await carViewModel.addCar(
-      colorController,
-      brandController,
-      modelController,
-      yearController,
-      priceController,
-      showSuccesMessage,
-      showErrorMessage,
-    );
+    await carViewModel.addCar(colorController, brandController, modelController,
+        yearController, priceController, context);
 
     setState(() {
       isLoading = false;
@@ -147,34 +140,16 @@ class _AddCarScreenState extends State<AddCarScreen> {
 
     final carViewModel = Provider.of<CarViewModel>(context, listen: false);
     await carViewModel.updateCar(
-      widget.car!.id,
-      colorController,
-      brandController,
-      modelController,
-      yearController,
-      priceController,
-      showSuccesMessage,
-      showErrorMessage,
-    );
+        widget.car!.id,
+        colorController,
+        brandController,
+        modelController,
+        yearController,
+        priceController,
+        context);
 
     setState(() {
       isLoading = false;
     });
-  }
-
-  void showSuccesMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.blue[300],
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void showErrorMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red[300],
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

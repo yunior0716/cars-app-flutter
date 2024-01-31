@@ -13,10 +13,12 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-final TextEditingController emailController = TextEditingController();
-final TextEditingController passwordController = TextEditingController();
-
 class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,13 +45,21 @@ class _LoginScreenState extends State<LoginScreen> {
                 labelText: "Password",
                 icon: Icons.lock,
               ),
-              CustomButton(
-                height: 50,
-                text: 'Login',
-                onPressed: () {
-                  login();
-                },
-              ),
+              isLoading
+                  ? const Center(
+                      child: SizedBox(
+                        height: 50,
+                        width: 50,
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+                  : CustomButton(
+                      height: 50,
+                      text: 'Login',
+                      onPressed: () {
+                        login();
+                      },
+                    ),
               Padding(
                 padding: const EdgeInsets.only(top: 10),
                 child: GestureDetector(
@@ -73,8 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     // Navigator.push(context, route);
-    Navigator.pushAndRemoveUntil(
-        context, route, (Route<dynamic> route) => false);
+    Navigator.pushReplacement(context, route);
   }
 
   void navigateToSignup() {
@@ -86,26 +95,18 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> login() async {
+    setState(() {
+      isLoading = true;
+    });
+
     final userViewModel = Provider.of<UserViewModel>(context, listen: false);
-    userViewModel.loginUser(emailController, passwordController,
-        showSuccesMessage, showErrorMessage, () {
+    await userViewModel.loginUser(emailController, passwordController, context,
+        () {
       navigateToCarList();
     });
-  }
 
-  void showSuccesMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.blue[300],
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void showErrorMessage(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red[300],
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    setState(() {
+      isLoading = false;
+    });
   }
 }

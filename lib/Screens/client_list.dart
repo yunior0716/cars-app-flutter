@@ -1,39 +1,35 @@
-import 'package:first_app/Models/car.dart';
-import 'package:first_app/Screens/add_car.dart';
+import 'package:first_app/Models/client.dart';
 import 'package:first_app/Screens/add_client.dart';
-import 'package:first_app/Screens/client_list.dart';
+import 'package:first_app/Screens/car_list.dart';
 import 'package:first_app/Screens/login_screen.dart';
 import 'package:first_app/ViewModels/auth_viewmodel.dart';
-import 'package:first_app/ViewModels/car_viewmodel.dart';
+import 'package:first_app/ViewModels/client_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
-class CarListScreen extends StatefulWidget {
-  const CarListScreen({super.key});
+class ClientListScreen extends StatefulWidget {
+  const ClientListScreen({super.key});
 
   @override
-  State<CarListScreen> createState() => _CarListScreenState();
+  State<ClientListScreen> createState() => _ClientListScreenState();
 }
 
-class _CarListScreenState extends State<CarListScreen> {
-  List<Car> cars = [];
+class _ClientListScreenState extends State<ClientListScreen> {
+  List<Client> clients = [];
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    getCars();
+    getClients();
   }
-
-  final formatCurrency = NumberFormat.simpleCurrency(locale: 'en_US');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue[200],
-          title: const Text('Car List'),
+          title: const Text('Client List'),
           centerTitle: true,
           actions: [
             IconButton(
@@ -66,11 +62,11 @@ class _CarListScreenState extends State<CarListScreen> {
               ),
               child: ListTile(
                 title: const Center(
-                    child: Text('Clients', style: TextStyle(fontSize: 18))),
+                    child: Text('Cars', style: TextStyle(fontSize: 18))),
                 onTap: () {
                   Navigator.pop(context);
 
-                  navigateToClientList();
+                  navigateToCarList();
                 },
               ),
             ),
@@ -98,52 +94,37 @@ class _CarListScreenState extends State<CarListScreen> {
         visible: isLoading,
         replacement: RefreshIndicator(
           onRefresh: () async {
-            getCars();
+            getClients();
           },
           child: ListView.builder(
-              itemCount: cars.length,
+              itemCount: clients.length,
               itemBuilder: (context, index) {
-                final car = cars[index];
-                final id = car.id;
+                final client = clients[index];
+                final id = client.id;
                 return Card(
                   color: Colors.blue[50],
                   child: ListTile(
-                    leading: Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: car.imgURL != "" && car.imgURL != null
-                              ? NetworkImage(car.imgURL!)
-                              : const AssetImage('images/rentcar.jpg')
-                                  as ImageProvider<Object>,
-                        ),
-                      ),
-                    ),
-                    title: Text('${car.brand} ${car.model}',
+                    leading: const Icon(Icons.person_2_rounded, size: 40),
+                    title: Text(client.name,
                         style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold)),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(car.year.toString(),
+                        Text(client.email,
                             style: const TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500)),
-                        const SizedBox(height: 7),
-                        Text(formatCurrency.format(car.price),
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue[600]))
+                        Text(client.phone.toString(),
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w500)),
                       ],
                     ),
                     trailing: PopupMenuButton(
                       onSelected: (value) {
                         if (value == 'edit') {
-                          navigateToEditCar(car);
+                          navigateToEditClient(client);
                         } else if (value == 'delete') {
-                          deleteCar(id);
+                          deleteClient(id);
                         }
                       },
                       itemBuilder: (context) {
@@ -167,27 +148,10 @@ class _CarListScreenState extends State<CarListScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: Colors.blue,
-        onPressed: navigateToCarRegister,
-        label: const Text('Add Car'),
+        onPressed: navigateToClientRegister,
+        label: const Text('Add Client'),
       ),
     );
-  }
-
-  Future<void> navigateToCarRegister() async {
-    final route = MaterialPageRoute(
-      builder: (context) => const AddCarScreen(),
-    );
-
-    await Navigator.push(context, route);
-    getCars();
-  }
-
-  Future<void> navigateToClientList() async {
-    final route = MaterialPageRoute(
-      builder: (context) => const ClientListScreen(),
-    );
-
-    await Navigator.push(context, route);
   }
 
   Future<void> navigateToClientRegister() async {
@@ -196,15 +160,24 @@ class _CarListScreenState extends State<CarListScreen> {
     );
 
     await Navigator.push(context, route);
+    getClients();
   }
 
-  Future<void> navigateToEditCar(Car car) async {
+  Future<void> navigateToCarList() async {
     final route = MaterialPageRoute(
-      builder: (context) => AddCarScreen(car: car),
+      builder: (context) => const CarListScreen(),
     );
 
     await Navigator.push(context, route);
-    getCars();
+  }
+
+  Future<void> navigateToEditClient(Client client) async {
+    final route = MaterialPageRoute(
+      builder: (context) => AddClientScreen(client: client),
+    );
+
+    await Navigator.push(context, route);
+    getClients();
   }
 
   Future<void> logout() async {
@@ -218,12 +191,13 @@ class _CarListScreenState extends State<CarListScreen> {
     await Navigator.pushReplacement(context, route);
   }
 
-  void getCars() async {
-    final carViewModel = Provider.of<CarViewModel>(context, listen: false);
-    final carResult = await carViewModel.getCars(context);
+  void getClients() async {
+    final clientViewModel =
+        Provider.of<ClientViewModel>(context, listen: false);
+    final clientResult = await clientViewModel.getClients(context);
 
     setState(() {
-      cars = carResult;
+      clients = clientResult;
     });
 
     setState(() {
@@ -231,10 +205,11 @@ class _CarListScreenState extends State<CarListScreen> {
     });
   }
 
-  void deleteCar(String id) async {
-    final carViewModel = Provider.of<CarViewModel>(context, listen: false);
-    await carViewModel.deleteCar(id, context);
+  void deleteClient(String id) async {
+    final clientViewModel =
+        Provider.of<ClientViewModel>(context, listen: false);
+    await clientViewModel.deleteClient(id, context);
 
-    getCars();
+    getClients();
   }
 }

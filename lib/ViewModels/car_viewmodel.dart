@@ -13,15 +13,14 @@ class CarViewModel extends ChangeNotifier {
     TextEditingController modelController,
     TextEditingController yearController,
     TextEditingController priceController,
-    void Function(String) showSuccesMessage,
-    void Function(String) showErrorMessage,
+    dynamic context,
   ) async {
     if (colorController.text.isEmpty ||
         brandController.text.isEmpty ||
         modelController.text.isEmpty ||
         yearController.text.isEmpty ||
         priceController.text.isEmpty) {
-      showErrorMessage('Please fill in all fields');
+      await showErrorMessage('Please fill in all fields', context);
       return;
     }
 
@@ -45,20 +44,22 @@ class CarViewModel extends ChangeNotifier {
         yearController.text = '';
         priceController.text = '';
 
-        showSuccesMessage('Car added successfully');
+        await showSuccesMessage('Car added successfully', context);
       } else {
         // print('Calling showErrorMessage()');
-        showErrorMessage('Unable to add car');
+        await showErrorMessage('Unable to add car', context);
+        return;
       }
     } catch (e) {
       // print('Caught exception: $e');
       // print('Calling showErrorMessage()');
-      showErrorMessage('Failed to connect to server');
+      await showErrorMessage('Failed to connect to server', context);
+      return;
     }
   }
 
   Future<List<Car>> getCars(
-    void Function(String) showErrorMessage,
+    dynamic context,
   ) async {
     try {
       final response = await apiService.getCars();
@@ -69,30 +70,31 @@ class CarViewModel extends ChangeNotifier {
 
         return cars;
       } else {
-        showErrorMessage('Unable to get cars');
+        await showErrorMessage('Unable to get cars', context);
         return [];
       }
     } catch (e) {
-      showErrorMessage('Failed to connect to server');
+      await showErrorMessage('Failed to connect to server', context);
       return [];
     }
   }
 
   Future<void> deleteCar(
     String id,
-    void Function(String) showSuccesMessage,
-    void Function(String) showErrorMessage,
+    dynamic context,
   ) async {
     try {
       final response = await apiService.deleteCar(id);
 
       if (response.statusCode == 200) {
-        showSuccesMessage('Car deleted successfully');
+        await showSuccesMessage('Car deleted successfully', context);
       } else {
-        showErrorMessage('Unable to delete car');
+        await showErrorMessage('Unable to delete car', context);
+        return;
       }
     } catch (e) {
-      showErrorMessage('Failed to connect to server');
+      await showErrorMessage('Failed to connect to server', context);
+      return;
     }
   }
 
@@ -103,8 +105,7 @@ class CarViewModel extends ChangeNotifier {
     TextEditingController modelController,
     TextEditingController yearController,
     TextEditingController priceController,
-    void Function(String) showSuccesMessage,
-    void Function(String) showErrorMessage,
+    dynamic context,
   ) async {
     final car = Car(
       color: colorController.text,
@@ -126,15 +127,35 @@ class CarViewModel extends ChangeNotifier {
         yearController.text = '';
         priceController.text = '';
 
-        showSuccesMessage('Car updated successfully');
+        await showSuccesMessage('Car updated successfully', context);
       } else {
         // print('Calling showErrorMessage()');
-        showErrorMessage('Unable to update car');
+        await showErrorMessage('Unable to update car', context);
+        return;
       }
     } catch (e) {
       // print('Caught exception: $e');
       // print('Calling showErrorMessage()');
-      showErrorMessage('Failed to connect to server');
+      await showErrorMessage('Failed to connect to server', context);
+      return;
     }
+  }
+
+  showSuccesMessage(String message, dynamic context) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.blue[300],
+      duration: const Duration(seconds: 1),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  showErrorMessage(String message, dynamic context) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red[300],
+      duration: const Duration(seconds: 1),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

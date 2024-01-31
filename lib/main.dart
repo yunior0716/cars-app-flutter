@@ -1,30 +1,39 @@
+import 'package:first_app/Screens/car_list.dart';
 import 'package:first_app/Screens/login_screen.dart';
 import 'package:first_app/ViewModels/auth_viewmodel.dart';
 import 'package:first_app/ViewModels/car_viewmodel.dart';
+import 'package:first_app/ViewModels/client_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => UserViewModel()),
         ChangeNotifierProvider(create: (context) => CarViewModel()),
+        ChangeNotifierProvider(create: (context) => ClientViewModel()),
       ],
-      child: const MyApp(),
+      child: MyApp(isLoggedIn: isLoggedIn),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool isLoggedIn;
+
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.light(),
-      home: const LoginScreen(),
+      home: isLoggedIn ? const CarListScreen() : const LoginScreen(),
     );
   }
 }

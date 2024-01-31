@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'http://192.168.1.6:3001';
+  final String baseUrl = 'http://192.168.1.8:3001';
 
   //Cars routes
 
@@ -52,6 +52,36 @@ class ApiService {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(userData),
+    );
+  }
+
+  //Clients routes
+  Future<http.Response> addClient(Map<String, dynamic> clientData) {
+    return http.post(
+      Uri.parse('$baseUrl/client'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(clientData),
+    );
+  }
+
+  Future<http.Response> getClients() {
+    return http.get(Uri.parse('$baseUrl/clients'));
+  }
+
+  Future<http.Response> deleteClient(String id) {
+    return http.delete(Uri.parse('$baseUrl/client/$id'));
+  }
+
+  Future<http.Response> updateClient(
+      Map<String, dynamic> clientData, String id) {
+    return http.put(
+      Uri.parse('$baseUrl/client/$id'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(clientData),
     );
   }
 }
