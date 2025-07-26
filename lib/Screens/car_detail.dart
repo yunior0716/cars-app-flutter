@@ -34,7 +34,7 @@ class CarDetailScreen extends StatelessWidget {
     this.description =
         'Vehículo SUV familiar, cómodo y potente. Motor diésel, ideal para ciudad y carretera.',
     this.transmission = 'Automática',
-    this.seats = 7,
+    this.seats = 4,
     this.horsepower = 3420,
     this.fuelType = 'Diésel',
     this.topSpeed = 190,

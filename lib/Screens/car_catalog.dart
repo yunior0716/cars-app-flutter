@@ -176,7 +176,7 @@ class _CarCatalogScreenState extends State<CarCatalogScreen> {
                                         description:
                                             'Descripción de ejemplo para el vehículo ${car.brand} ${car.model}.',
                                         transmission: 'Automática',
-                                        seats: 7,
+                                        seats: 4,
                                         horsepower: 3420,
                                         fuelType: 'Diésel',
                                         topSpeed: 190,

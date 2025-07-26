@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'http://192.168.1.8:3001';
+  final String baseUrl = 'http://192.168.1.10:3001';
 
   //Cars routes
 
